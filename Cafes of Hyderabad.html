@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyderabad Cafe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Root Variables & Reset --- */
+        :root {
+            --pink: #ec4899;
+            --pink-hover: #db2777;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --amber: #f59e0b;
+            --amber-hover: #d97706;
+            --green: #4ade80;
+            --yellow: #facc15;
+            --red: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: white;
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s ease;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo i { color: var(--pink); font-size: 1.8rem; }
+        .logo span { color: var(--pink); }
+
+        /* --- Search & Filters --- */
+        .search-section {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 25px;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            border-radius: 15px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-input:focus { border-color: var(--pink); box-shadow: 0 0 15px rgba(236, 72, 153, 0.2); }
+
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-dark);
+            border: 1px solid var(--glass-border);
+            border-radius: 0 0 15px 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 101;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+
+        .suggestion-item:hover { background: rgba(236, 72, 153, 0.1); }
+        .suggestion-item:last-child { border-bottom: none; }
+
+        .filter-scroll-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .filter-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 10px 5px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pink) transparent;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+        }
+
+        .filter-scroll::-webkit-scrollbar { height: 4px; }
+        .filter-scroll::-webkit-scrollbar-thumb { 
+            background: var(--pink); 
+            border-radius: 2px; 
+        }
+
+        .filter-chip {
+            padding: 8px 18px;
+            border-radius: 25px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            scroll-snap-align: start;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-chip:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); }
+        .filter-chip.active { background: var(--pink); border-color: var(--pink); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3); }
+
+        .price-filter {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--glass);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .price-filter label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        #priceValue {
+            color: var(--pink);
+            font-weight: 600;
+        }
+
+        #priceSlider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, var(--glass), var(--pink));
+            border-radius: 3px;
+            outline: none;
+        }
+
+        #priceSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--pink);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .comparison-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .comparison-bar.hidden {
+            transform: translateX(-50%) translateY(100px);
+        }
+
+        .compare-item {
+            background: var(--glass);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compare-item button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .compare-item button:hover { color: var(--pink); }
+
+        .compare-actions { display: flex; gap: 10px; }
+
+        .btn-compare {
+            padding: 8px 15px;
+            background: var(--pink);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-compare:hover {
+            background: var(--pink-hover);
+            transform: translateY(-2px);
+        }
+
+        /* --- Cafe Cards (with compact booking badge) --- */
+        .cafe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding-bottom: 100px;
+        }
+
+        .cafe-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cafe-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(236, 72, 153, 0.4);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .cafe-card:active { transform: scale(0.98); }
+
+        .visited-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        /* Compact table badge (now in header) */
+        .compact-table-badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 30px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        .badge-green { color: #4ade80; }
+        .badge-yellow { color: #facc15; }
+        .badge-red { color: #f87171; }
+
+        .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .fav-btn, .compare-btn {
+            position: absolute;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--glass-border);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.2s;
+        }
+
+        .fav-btn { top: 15px; }
+        .compare-btn { top: 65px; }
+
+        .fav-btn:hover { background: rgba(236, 72, 153, 0.3); }
+        .compare-btn:hover { background: rgba(59, 130, 246, 0.3); }
+
+        .fav-btn.active i { color: var(--pink); }
+        .compare-btn.active { background: rgba(59, 130, 246, 0.5); border-color: #3b82f6; }
+
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 5px; 
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .card-title { 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            line-height: 1.2; 
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .card-price { color: #4ade80; font-family: monospace; font-weight: bold; }
+        .card-area { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 12px; }
+        .card-info-row { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+        .card-info-row i { color: var(--pink); }
+        .card-desc { font-size: 0.85rem; color: rgba(255,255,255,0.8); margin: 15px 0; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .card-footer {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rating { color: #facc15; font-size: 0.8rem; font-weight: bold; }
+        .view-btn { color: var(--pink); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-container {
+            background: #1e1b4b;
+            border: 1px solid var(--glass-border);
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            border-radius: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-content { display: flex; flex-wrap: wrap; }
+        .modal-img-side { flex: 1; min-width: 350px; height: 500px; }
+        .modal-img-side img { width: 100%; height: 100%; object-fit: cover; }
+        .modal-info-side { flex: 1.2; padding: 40px; min-width: 350px; }
+        .modal-close { position: absolute; top: 20px; right: 25px; font-size: 2rem; cursor: pointer; opacity: 0.5; z-index: 50; }
+        .modal-close:hover { opacity: 1; color: var(--pink); }
+        .modal-tag { color: var(--pink); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+        .modal-title { font-size: 2.2rem; font-weight: 700; margin-bottom: 10px; }
+        .modal-meta { display: flex; gap: 20px; margin-bottom: 25px; font-size: 0.9rem; font-weight: 600; }
+        .modal-desc { border-left: 3px solid var(--pink); padding-left: 20px; font-style: italic; margin-bottom: 30px; opacity: 0.9; }
+
+        .modal-details-list { display: grid; gap: 15px; margin-bottom: 35px; }
+        .detail-item { display: flex; gap: 15px; font-size: 0.9rem; }
+        .detail-item i { color: var(--pink); font-size: 1.1rem; }
+
+        /* Detailed table availability (kept in modal) */
+        .table-availability-modal {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        .table-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 12px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--pink);
+        }
+        .stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+        .progress-bar-modal {
+            height: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0 10px;
+        }
+        .progress-fill-modal {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pink), #f59e0b);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 5px;
+        }
+
+        .specialty-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .s-tag { background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.2); color: var(--pink); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+
+        .share-btn {
+            position: absolute;
+            top: 20px;
+            right: 70px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--glass-border);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+        }
+
+        .share-btn:hover { background: var(--glass); color: var(--pink); }
+
+        /* --- BOOK A TABLE BUTTON & PANEL --- */
+        .btn-booking {
+            grid-column: span 2;
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+            padding: 16px;
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px -5px rgba(245,158,11,0.4);
+            margin-top: 15px;
+            width: 100%;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-booking:hover {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(245,158,11,0.6);
+        }
+
+        .btn-booking.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background: #666;
+        }
+
+        .booking-panel {
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 15px;
+            border: 1px solid rgba(245,158,11,0.4);
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .booking-panel.active { display: block; }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .booking-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .booking-field { flex: 1 1 150px; }
+
+        .booking-field label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .booking-field input, .booking-field select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            color: white;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        .booking-field input:focus, .booking-field select:focus {
+            border-color: #f59e0b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.25);
+            background: rgba(0,0,0,0.6);
+        }
+
+        .booking-field input[type="date"]::-webkit-calendar-picker-indicator { 
+            filter: invert(1); opacity: 0.6; cursor: pointer;
+        }
+
+        .btn-book-confirm {
+            width: 100%;
+            padding: 16px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-book-confirm:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(217,119,6,0.4);
+        }
+
+        /* --- BEAUTIFUL BOOKING CONFIRMATION MODAL --- */
+        .booking-confirmation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(145deg, #0f172a, #1a1e30);
+            border: 2px solid rgba(245,158,11,0.6);
+            border-radius: 32px;
+            padding: 35px 30px;
+            z-index: 2000;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        .booking-confirmation.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .confirmation-icon {
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            font-size: 2.8rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirmation-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .confirmation-details {
+            background: rgba(255,255,255,0.07);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 25px 0;
+            border: 1px solid rgba(245,158,11,0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .cafe-name-big {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-close {
+            background: var(--pink);
+            border: none;
+            color: white;
+            padding: 14px 35px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            font-size: 1rem;
+        }
+
+        .confirmation-close:hover {
+            background: var(--pink-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(236,72,153,0.4);
+        }
+
+        /* --- ADMIN PAGE --- */
+        .admin-section {
+            padding: 40px 0;
+            display: none;
+        }
+
+        .admin-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .admin-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #f59e0b, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .booking-table th {
+            text-align: left;
+            padding: 15px 10px;
+            background: rgba(236,72,153,0.2);
+            border-bottom: 2px solid var(--pink);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .booking-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--glass-border);
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+        }
+
+        .booking-table tr:hover { background: rgba(255,255,255,0.05); }
+
+        .no-bookings {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .clear-bookings-btn {
+            background: rgba(236,72,153,0.2);
+            border: 1px solid var(--pink);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .clear-bookings-btn:hover { background: var(--pink); }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: var(--pink);
+            font-weight: 500;
+        }
+
+        /* --- ADMIN LOCK SCREEN --- */
+        .admin-lock-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .admin-lock-overlay.active { display: flex; }
+
+        .lock-card {
+            background: linear-gradient(145deg, #0f172a, #1a1e30);
+            border: 2px solid var(--pink);
+            border-radius: 40px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(236,72,153,0.2);
+            animation: lockPulse 2s infinite alternate;
+        }
+
+        @keyframes lockPulse {
+            from { box-shadow: 0 20px 40px rgba(236,72,153,0.2); }
+            to { box-shadow: 0 20px 60px rgba(236,72,153,0.5); }
+        }
+
+        .lock-icon {
+            background: var(--pink);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 3.2rem;
+            color: white;
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+
+        .lock-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ec4899, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lock-sub {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .lock-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid rgba(236,72,153,0.5);
+            border-radius: 40px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.2s;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        .lock-input:focus {
+            border-color: var(--pink);
+            box-shadow: 0 0 20px rgba(236,72,153,0.4);
+        }
+
+        .lock-btn {
+            background: linear-gradient(145deg, #ec4899, #db2777);
+            border: none;
+            color: white;
+            padding: 16px 30px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .lock-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(236,72,153,0.5);
+        }
+
+        .lock-error {
+            color: #f87171;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .lock-error.show { display: block; }
+
+        /* --- Reviews Section --- */
+        .reviews-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .reviews-section h4 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: var(--pink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .review:last-child { border-bottom: none; }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .reviewer {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .review-rating { color: #facc15; font-size: 0.9rem; }
+
+        .review-text {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            font-style: italic;
+        }
+
+        /* --- MENU STYLES --- */
+        .menu-list-container {
+            display: none;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 0;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(5px);
+        }
+
+        .menu-item:last-child { border-bottom: none; }
+
+        .menu-item-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.2s;
+        }
+
+        .menu-item:hover .menu-item-img { transform: scale(1.05); }
+
+        .menu-item-details {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item-name { font-weight: 500; font-size: 0.9rem; }
+        .menu-item-price { color: #4ade80; font-weight: 700; font-family: monospace; font-size: 0.95rem; }
+
+        .menu-category {
+            margin-top: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--pink);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--pink);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Modal Actions --- */
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-pink { background: var(--pink); color: white; }
+        .btn-pink:hover { background: var(--pink-hover); transform: translateY(-3px); }
+        .btn-outline { border: 1px solid var(--glass-border); background: var(--glass); color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        .btn-visited {
+            grid-column: span 2;
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #4ade80;
+        }
+
+        .btn-visited.visited { background: rgba(76, 175, 80, 0.4); }
+
+        /* --- Background Animation --- */
+        #canvas-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+        .bg-blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: drift 15s infinite alternate ease-in-out; }
+
+        @keyframes drift {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, 50px) scale(1.2); }
+        }
+
+        /* --- Keyboard Shortcut --- */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .keyboard-hint:hover { opacity: 1; }
+
+        .key {
+            display: inline-block;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--glass-border);
+            margin: 0 2px;
+            font-family: monospace;
+        }
+
+        *:focus { outline: 2px solid var(--pink); outline-offset: 2px; }
+
+        @media (max-width: 768px) {
+            .modal-img-side { height: 250px; }
+            .modal-info-side { padding: 25px; }
+            .modal-title { font-size: 1.8rem; }
+            .filter-scroll { padding: 10px 0; }
+            .comparison-bar { width: 90%; flex-wrap: wrap; justify-content: center; }
+            .compare-item { font-size: 0.7rem; }
+            .keyboard-hint { display: none; }
+            .menu-item-img { width: 50px; height: 50px; }
+            .modal-actions { grid-template-columns: 1fr; }
+            .btn-visited { grid-column: 1; }
+            .btn-booking { grid-column: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .cafe-grid { grid-template-columns: 1fr; gap: 15px; }
+            .modal-content { flex-direction: column; }
+            .modal-img-side, .modal-info-side { min-width: 100%; }
+            .modal-img-side { height: 200px; }
+            .modal-actions { grid-template-columns: 1fr; }
+            .btn-visited { grid-column: 1; }
+            .menu-item { padding: 10px 0; }
+            .menu-item-img { width: 45px; height: 45px; }
+        }
+
+        /* --- INTRO OVERLAY --- */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeOutIntro 0.8s ease 2.5s forwards;
+        }
+        .intro-content {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+        .intro-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        .intro-logo i {
+            color: #ec4899;
+            font-size: 3rem;
+            margin-right: 10px;
+        }
+        .intro-logo span {
+            color: #ec4899;
+        }
+        .intro-carousel {
+            height: 240px;
+            position: relative;
+            margin: 2rem 0;
+        }
+        .intro-slide {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+        .intro-slide.active {
+            opacity: 1;
+        }
+        .intro-slide img {
+            width: 320px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 24px;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.5);
+        }
+        .intro-slide p {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #ec4899;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        @keyframes fadeOutIntro {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+    </style>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+emailjs.init("NVTxSIRPkr-6awXFF");
+})();
+</script>
+
+</head>
+<body>
+    <!-- INTRO OVERLAY -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-content">
+            <div class="intro-logo">
+                <i class="bi bi-cup-hot"></i> HYDERABAD <span>CAFÉS</span>
+            </div>
+            <div class="intro-carousel">
+                <div class="intro-slide active">
+                    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400" alt="Coffee Cup">
+                    <p>Coffee Cup · Sainikpuri</p>
+                </div>
+                <div class="intro-slide">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400" alt="Groove 9">
+                    <p>Groove 9 · Sainikpuri</p>
+                </div>
+                <div class="intro-slide">
+                    <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400" alt="Ofen">
+                    <p>Ofen · Secunderabad</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-bg"></div>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="bi bi-cup-hot"></i>
+                HYDERABAD <span>CAFÉS</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div id="favoritesCount" style="font-size: 0.7rem; background: var(--glass); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--glass-border);">
+                    0 Favorites
+                </div>
+                <a href="#" id="adminLink" style="display: flex; align-items: center; gap: 5px; background: var(--glass); padding: 6px 15px; border-radius: 30px; border: 1px solid var(--glass-border); font-size: 0.75rem;">
+                    <i class="bi bi-shield-lock"></i> Admin
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- MAIN CAFE SECTION -->
+        <div id="cafeSection">
+            <section class="search-section">
+                <div class="search-container">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search Sainikpuri, Secunderabad, Banjara Hills...">
+                    <div id="suggestions" class="suggestions-box"></div>
+                </div>
+                
+                <div class="filter-scroll-container">
+                    <div class="filter-scroll">
+                        <button class="filter-chip active" data-filter="all">All Cafés</button>
+                        <button class="filter-chip" data-filter="favorites"><i class="bi bi-heart-fill"></i> Saved</button>
+                        <button class="filter-chip" data-filter="mostBooked">🔥 Most Booked</button>
+                        <button class="filter-chip" data-filter="Coffee">Specialty Coffee</button>
+                        <button class="filter-chip" data-filter="Dessert">Dessert & Bakery</button>
+                        <button class="filter-chip" data-filter="Sainikpuri">Sainikpuri</button>
+                        <button class="filter-chip" data-filter="Secunderabad">Secunderabad</button>
+                        <button class="filter-chip" data-filter="Banjara Hills">Banjara Hills</button>
+                        <button class="filter-chip" data-filter="Jubilee Hills">Jubilee Hills</button>
+                        <button class="filter-chip" data-filter="Old City">Old City</button>
+                        <button class="filter-chip" data-filter="Madhapur">Madhapur</button>
+                        <button class="filter-chip" data-filter="Gachibowli">Gachibowli</button>
+                    </div>
+                </div>
+
+                <div class="price-filter">
+                    <label>Price Range: <span id="priceValue">₹0 - ₹2000</span></label>
+                    <input type="range" id="priceSlider" min="0" max="2000" value="2000" step="100">
+                </div>
+            </section>
+
+            <div id="cafesGrid" class="cafe-grid"></div>
+        </div>
+
+        <!-- ADMIN SECTION -->
+        <div id="adminSection" class="admin-section">
+            <a href="#" id="backToCafesLink" class="back-link"><i class="bi bi-arrow-left"></i> Back to Cafés</a>
+            <div class="admin-card">
+                <div class="admin-header">
+                    <h2><i class="bi bi-clipboard-data"></i> Booking Admin</h2>
+                    <button id="clearAllBookingsBtn" class="clear-bookings-btn"><i class="bi bi-trash"></i> Clear all bookings</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="booking-table">
+                        <thead>
+                            <tr>
+                                <th>Cafe</th>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Guests</th>
+                                <th>Booked on</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="noBookingsMsg" class="no-bookings" style="display: none;">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                    <p>No table bookings yet.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ADMIN LOCK SCREEN -->
+    <div id="adminLockOverlay" class="admin-lock-overlay">
+        <div class="lock-card">
+            <div class="lock-icon"><i class="bi bi-shield-lock-fill"></i></div>
+            <div class="lock-title">Admin Lock</div>
+            <div class="lock-sub">Enter password to access bookings</div>
+            <input type="password" id="adminPasswordInput" class="lock-input" placeholder="••••••••" maxlength="20">
+            <button id="unlockAdminBtn" class="lock-btn"><i class="bi bi-unlock-fill"></i> Unlock</button>
+            <div id="lockErrorMessage" class="lock-error"><i class="bi bi-exclamation-triangle"></i> Incorrect password. Hint: admin123</div>
+            <div style="margin-top: 20px; opacity: 0.5; font-size: 0.75rem;">(Default password: <strong>admin123</strong>)</div>
+        </div>
+    </div>
+
+    <!-- Comparison Bar -->
+    <div id="comparisonBar" class="comparison-bar hidden">
+        <div class="compare-items" id="compareItems"></div>
+        <div class="compare-actions">
+            <button id="clearCompare" class="btn-compare">Clear</button>
+            <button id="compareNow" class="btn-compare">Compare (0)</button>
+        </div>
+    </div>
+
+    <!-- Cafe Modal -->
+    <div id="cafeModal" class="modal-overlay">
+        <div class="modal-container">
+            <span class="modal-close" onclick="closeModal()">×</span>
+            <button class="share-btn" onclick="shareCafe()"><i class="bi bi-share"></i></button>
+            <div id="modalContent" class="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- BOOKING CONFIRMATION MODAL -->
+    <div id="bookingConfirmationModal" class="booking-confirmation">
+        <div class="confirmation-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="confirmation-title">Booking Confirmed!</div>
+        <div id="confirmCafeName" class="cafe-name-big">Coffee Cup</div>
+        <div class="confirmation-details">
+            <div class="detail-row"><span class="detail-label"><i class="bi bi-person"></i> NAME</span><span id="confirmCustomerName" class="detail-value">John Doe</span></div>
+            <div class="detail-row"><span class="detail-label"><i class="bi bi-envelope"></i> EMAIL</span><span id="confirmCustomerEmail" class="detail-value">john@example.com</span></div>
+            <div class="detail-row"><span class="detail-label"><i class="bi bi-telephone"></i> PHONE</span><span id="confirmCustomerPhone" class="detail-value">+91 98765 43210</span></div>
+            <div class="detail-row"><span class="detail-label"><i class="bi bi-calendar3"></i> DATE</span><span id="confirmDate" class="detail-value">11 Feb 2026</span></div>
+            <div class="detail-row"><span class="detail-label"><i class="bi bi-clock"></i> TIME</span><span id="confirmTime" class="detail-value">7:00 PM</span></div>
+            <div class="detail-row"><span class="detail-label"><i class="bi bi-people"></i> GUESTS</span><span id="confirmGuestCount" class="detail-value">2 people</span></div>
+        </div>
+        <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px; font-size: 0.9rem;"><i class="bi bi-envelope-paper"></i> A confirmation email has been sent to your inbox.</p>
+        <button class="confirmation-close" onclick="closeBookingConfirmation()"><i class="bi bi-check-lg"></i> Done</button>
+    </div>
+
+    <!-- Keyboard Shortcut Hint -->
+    <div class="keyboard-hint">
+        <span>Press <span class="key">/</span> to search • <span class="key">Esc</span> to close</span>
+    </div>
+
+    <script>
+        // --- COMPLETE 30 CAFES DATASET (FULL) ---
+        const cafesData = [
+            { id: 1, name: "Coffee Cup", area: "Sainikpuri", rating: 4.7, reviews: 3200, category: ["Sainikpuri", "Coffee"], image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800", description: "Iconic terrace cafe with rustic wooden vibes, board games, and great music.", address: "Behind Canara Bank, Sainikpuri", phone: "+91 9000334455", timing: "9:00 AM - 11:30 PM", priceRange: "₹800", specialties: ["English Breakfast", "Chicken Lasagna"], menu: [{item: "Full English Breakfast", price: "₹450", img: "https://images.unsplash.com/photo-1546069901-dbfa1c6d91e0?w=150"},{item: "Iced Caramel Macchiato", price: "₹240", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Chicken Lasagna", price: "₹380", img: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=150"},{item: "Blueberry Cheesecake", price: "₹220", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=150"},{item: "Hazelnut Latte", price: "₹210", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8q1WF5xPVa-ve4pm0VLm9zawGPoKpGppCsg&s"},{item: "Fish & Chips", price: "₹420", img: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=150"},{item: "Mushroom Stroganoff", price: "₹350", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150"},{item: "Irish Coffee", price: "₹250", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Garden Fresh Pizza", price: "₹390", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Loaded Nachos", price: "₹280", img: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=150"},{item: "Pesto Pasta", price: "₹340", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Tuna Melt Sandwich", price: "₹290", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Hot Chocolate", price: "₹190", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Brownie Shake", price: "₹240", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Espresso Shot", price: "₹120", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"}], isNew: true, totalTables: 15 },
+            { id: 2, name: "E'voke Café", area: "Sainikpuri", rating: 4.5, reviews: 1100, category: ["Sainikpuri", "Dessert"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD7DkYYfuYy2HOV8lYjlA-cuZvemeT-DRJjQ&s", description: "Boutique cafe with chic white interiors and a focus on artisan continental cuisine.", address: "Sainikpuri Main Road", phone: "+91 9122334455", timing: "11:00 AM - 11:00 PM", priceRange: "₹900", specialties: ["Pink Sauce Pasta", "Nutella Cheesecake"], menu: [{item: "Pink Sauce Pasta", price: "₹340", img: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?w=150"},{item: "Hummus Platter", price: "₹280", img: "https://images.unsplash.com/photo-1540713434306-58505cf1b6fc?w=150"},{item: "Nutella Cheesecake", price: "₹260", img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=150"},{item: "Truffle Fries", price: "₹250", img: "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=150"},{item: "Red Velvet Latte", price: "₹230", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXTvCSvcLNfYKxrXhuvgv4aUdfCWv2hOyoyA&s"},{item: "Classic Greek Salad", price: "₹310", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Spaghetti Aglio Olio", price: "₹360", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=150"},{item: "Grilled Paneer Steak", price: "₹420", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr7_rAVkl0rI16l5qZrI0pmBp-j3xwkR2-gQ&s"},{item: "Belgian Hot Cocoa", price: "₹240", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Avocado Toast", price: "₹380", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Tiramisu Jar", price: "₹220", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=150"},{item: "Peri Peri Wings", price: "₹320", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Iced Peach Tea", price: "₹180", img: "https://www.eatingwell.com/thmb/S4mEBHCn_c3y0U17S9dWEubvW1Y=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/peach-iced-tea-hero-1x1-15009_preview_maxWidth_4000_maxHeight_4000_ppi_300_quality_100-0d9f432284a447fc9151868c5acf6c7e.jpg"},{item: "Blueberry Muffin", price: "₹140", img: "https://images.unsplash.com/photo-1576866209830-589e1bfbaa4d?w=150"},{item: "Cottage Cheese Burger", price: "₹290", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"}], isNew: false, totalTables: 12 },
+            { id: 3, name: "Groove 9", area: "Sainikpuri", rating: 4.4, reviews: 950, category: ["Sainikpuri", "Coffee"], image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800", description: "Outdoor garden cafe perfect for evening dates and group hangouts.", address: "Vayupuri, Sainikpuri", phone: "+91 9888776655", timing: "12:00 PM - 11:30 PM", priceRange: "₹700", specialties: ["Peri Peri Fries", "Cold Coffee"], menu: [{item: "Cheese Loaded Fries", price: "₹220", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=150"},{item: "Hazelnut Cold Coffee", price: "₹210", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=150"},{item: "Veg Club Sandwich", price: "₹180", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "BBQ Chicken Pizza", price: "₹450", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Crispy Corn", price: "₹190", img: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=150"},{item: "Oreo Milkshake", price: "₹220", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Paneer Tikka Roll", price: "₹160", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Classic Lemonade", price: "₹120", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTapYpLAwHHzBW37OfOrSMjw_kD5rJZCMD4Mg&s"},{item: "Garlic Bread Sticks", price: "₹150", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=150"},{item: "Alfredo Veg Pasta", price: "₹320", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Cappuccino", price: "₹160", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Chicken Popcorn", price: "₹240", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "KitKat Shake", price: "₹230", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Arrabiata Pasta", price: "₹310", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=150"},{item: "Waffle with Ice Cream", price: "₹180", img: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=150"}], isNew: false, totalTables: 20 },
+            { id: 4, name: "F3 Cafe & Bistro", area: "Sainikpuri", rating: 4.6, reviews: 1400, category: ["Sainikpuri", "Coffee"], image: "https://f3cafe.in/assets/img/about/3.jpg", description: "A trendy bistro offering a fusion of flavors and high-quality brews.", address: "Sainikpuri High Road", phone: "+91 9900112233", timing: "10:00 AM - 10:30 PM", priceRange: "₹600", specialties: ["Burgers", "Hot Chocolate"], menu: [{item: "Crispy Chicken Burger", price: "₹260", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Classic Hot Chocolate", price: "₹190", img: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=150"},{item: "Peri Peri Wings", price: "₹280", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Mexican Rice Bowl", price: "₹320", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Farmhouse Pizza", price: "₹380", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Cheese Balls", price: "₹180", img: "https://images.unsplash.com/photo-1485921325833-c519f76c4927?w=150"},{item: "Affogato", price: "₹170", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Vanilla Latte", price: "₹180", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Fish Fingers", price: "₹350", img: "https://images.unsplash.com/photo-1526470498-9ae73c665de8?w=150"},{item: "Paneer Burger", price: "₹220", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"},{item: "Pink Lemonade", price: "₹140", img: "https://images.unsplash.com/photo-1621264968372-43e0c69d6f6a?w=150"},{item: "Veg Quesadilla", price: "₹240", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Chicken Steak", price: "₹450", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Chocolate Lava Cake", price: "₹160", img: "https://images.unsplash.com/photo-1624353365286-3f8d62dadadf?w=150"},{item: "Iced Americano", price: "₹150", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"}], isNew: false, totalTables: 18 },
+            { id: 5, name: "Concu Sainikpuri", area: "Sainikpuri", rating: 4.8, reviews: 800, category: ["Sainikpuri", "Dessert"], image: "https://curlytales.com/wp-content/uploads/2023/08/Concu.jpg", description: "The famous patisserie now brings its world-class macarons and cakes to the neighborhood.", address: "Dr. A.S. Rao Nagar", phone: "+91 40 2354567", timing: "11:00 AM - 11:00 PM", priceRange: "₹1000", specialties: ["Macarons", "Opera Cake"], menu: [{item: "Tiramisu", price: "₹350", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=150"},{item: "Box of 6 Macarons", price: "₹650", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Signature Hot Cocoa", price: "₹240", img: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=150"},{item: "Opera Cake Slice", price: "₹290", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Banoffee Tart", price: "₹210", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Almond Croissant", price: "₹180", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150"},{item: "Quiche Lorraine", price: "₹240", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"},{item: "Eclair Au Chocolat", price: "₹190", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Fruit Danish", price: "₹160", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Iced Latte", price: "₹220", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Sourdough Avocado", price: "₹410", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Earl Grey Tea", price: "₹180", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Cheesecake Brownie", price: "₹220", img: "https://images.unsplash.com/photo-1624353365286-3f8d62dadadf?w=150"},{item: "Smoked Chicken Salad", price: "₹380", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Espresso Tonic", price: "₹210", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"}], isNew: true, totalTables: 14 },
+            { id: 6, name: "Ofen", area: "Secunderabad", rating: 4.5, reviews: 2800, category: ["Secunderabad", "Dessert"], image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800", description: "Legendary bakery and cafe known for its authentic European-style breakfast and bread.", address: "Karkhana, Secunderabad", phone: "+91 40 2770000", timing: "8:00 AM - 11:00 PM", priceRange: "₹900", specialties: ["Belgian Waffles", "Omelettes"], menu: [{item: "Belgian Waffles", price: "₹280", img: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=150"},{item: "Masala Omelette", price: "₹220", img: "https://images.unsplash.com/photo-1510693206972-df098062cb71?w=150"},{item: "Blueberry Cheesecake", price: "₹250", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=150"},{item: "French Toast", price: "₹240", img: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=150"},{item: "Farmer's Breakfast", price: "₹420", img: "https://images.unsplash.com/photo-1546069901-dbfa1c6d91e0?w=150"},{item: "Apple Pie", price: "₹190", img: "https://images.unsplash.com/photo-1561626423-8fa6f7d4e8e6?w=150"},{item: "Hot Buttered Toast", price: "₹90", img: "https://images.unsplash.com/photo-1525351462161-f408fb19b4f5?w=150"},{item: "Chicken Sausages", price: "₹180", img: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=150"},{item: "Black Coffee", price: "₹140", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150"},{item: "Mushroom On Toast", price: "₹260", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Beef Burger", price: "₹380", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Grilled Chicken Salad", price: "₹340", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Cold Coffee with Cream", price: "₹210", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=150"},{item: "Cinnamon Roll", price: "₹150", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Veg Quiche", price: "₹190", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"}], isNew: false, totalTables: 25 },
+            { id: 7, name: "Kaficko", area: "Secunderabad", rating: 4.3, reviews: 1200, category: ["Secunderabad", "Coffee"], image: "https://lh3.googleusercontent.com/hL7ON9kWhpG2j91qZ4wt2_vXZQtLcCTpXilGZN0fZhLePCv7COh12vpiX5E-hCDGawwO77RBuCDHa2cl3hEFYrOpflc=w360-rw", description: "A stylish spot for coffee enthusiasts and salad lovers in Sindhi Colony.", address: "Sindhi Colony, Secunderabad", phone: "+91 9100119922", timing: "11:00 AM - 11:00 PM", priceRange: "₹800", specialties: ["Greek Salad", "Pour Over Coffee"], menu: [{item: "Greek Salad", price: "₹290", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Hand-Brewed V60", price: "₹180", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Fish Fingers", price: "₹360", img: "https://images.unsplash.com/photo-1526470498-9ae73c665de8?w=150"},{item: "Caesar Salad", price: "₹310", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Cold Brew", price: "₹210", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Hummus Platter", price: "₹280", img: "https://images.unsplash.com/photo-1540713434306-58505cf1b6fc?w=150"},{item: "Japanese Curry Rice", price: "₹450", img: "https://images.unsplash.com/photo-1556568352-246fecb46f3b?w=150"},{item: "Cortado", price: "₹160", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Mushroom Bao", price: "₹320", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Iced Latte", price: "₹220", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Chicken Katsu", price: "₹480", img: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=150"},{item: "Sticky Toffee Pudding", price: "₹250", img: "https://images.unsplash.com/photo-1561626423-8fa6f7d4e8e6?w=150"},{item: "Flat White", price: "₹190", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Vegetable Tempura", price: "₹240", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Hibiscus Tea", price: "₹170", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"}], isNew: false, totalTables: 16 },
+            { id: 8, name: "Gallery Cafe", area: "Secunderabad", rating: 4.4, reviews: 600, category: ["Secunderabad", "Coffee"], image: "https://www.airial.travel/_next/image?url=https%3A%2F%2Fmedia-cdn.tripadvisor.com%2Fmedia%2Fphoto-o%2F0a%2F57%2Ffd%2F0c%2Fparadise-road-the-gallery.jpg&w=3840&q=75", description: "Quiet art-filled sanctuary perfect for readers and freelancers.", address: "Marredpally, Secunderabad", phone: "+91 9911223344", timing: "10:00 AM - 10:00 PM", priceRange: "₹500", specialties: ["Herbal Tea", "Pasta"], menu: [{item: "Chamomile Tea", price: "₹150", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "White Sauce Pasta", price: "₹310", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Bruschetta", price: "₹180", img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=150"},{item: "Ginger Honey Tea", price: "₹120", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Maggi Noodles", price: "₹90", img: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=150"},{item: "Corn Cheese Toast", price: "₹140", img: "https://images.unsplash.com/photo-1525351462161-f408fb19b4f5?w=150"},{item: "Filter Coffee", price: "₹70", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Green Salad", price: "₹180", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Omelette Sandwich", price: "₹160", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Potato Wedges", price: "₹150", img: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=150"},{item: "Fresh Lime Soda", price: "₹110", img: "https://images.unsplash.com/photo-1621264968372-43e0c69d6f6a?w=150"},{item: "Aloo Paratha", price: "₹130", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Banana Milkshake", price: "₹140", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Veg Burger", price: "₹180", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"},{item: "Chocolate Pastry", price: "₹120", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"}], isNew: false, totalTables: 10 },
+            { id: 9, name: "Vantage Cafe", area: "Secunderabad", rating: 4.2, reviews: 400, category: ["Secunderabad", "Coffee"], image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1d/e8/ab/ed/caption.jpg?w=1100&h=1100&s=1", description: "Elevated cafe experience with a great view and even better coffee.", address: "M.G. Road, Secunderabad", phone: "+91 9000112244", timing: "4:00 PM - 11:00 PM", priceRange: "₹700", specialties: ["Loaded Nachos", "Cappuccino"], menu: [{item: "Loaded Nachos", price: "₹240", img: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=150"},{item: "Classic Cappuccino", price: "₹160", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Chicken Strips", price: "₹280", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Mocha", price: "₹190", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Veggie Pizza", price: "₹350", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Paneer Nuggets", price: "₹180", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Iced Americano", price: "₹150", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Chocolate Shake", price: "₹210", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Chicken Wings", price: "₹320", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Garlic Bread", price: "₹140", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=150"},{item: "Strawberry Smoothie", price: "₹190", img: "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=150"},{item: "BBQ Paneer Sandwich", price: "₹240", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Espresso", price: "₹110", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Onion Rings", price: "₹130", img: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=150"},{item: "Mud Cake", price: "₹180", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"}], isNew: false, totalTables: 22 },
+            { id: 10, name: "Blue Bottle", area: "Secunderabad", rating: 4.1, reviews: 300, category: ["Secunderabad", "Coffee"], image: "https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=800", description: "Cozy local favorite for a quick filter coffee and South Indian snacks.", address: "Bowenpally", phone: "+91 9848012345", timing: "7:00 AM - 9:00 PM", priceRange: "₹300", specialties: ["Filter Coffee", "Maska Bun"], menu: [{item: "Strong Filter Coffee", price: "₹60", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Maska Bun", price: "₹80", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Osmania Biscuits", price: "₹40", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Samosa (2pcs)", price: "₹50", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Onion Samosa", price: "₹40", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Irani Chai", price: "₹40", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Bread Omelette", price: "₹110", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Masala Chai", price: "₹50", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Veg Puff", price: "₹35", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Egg Puff", price: "₹45", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Dilkhush", price: "₹60", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150"},{item: "Cold Coffee", price: "₹120", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=150"},{item: "Rose Milk", price: "₹90", img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=150"},{item: "Fruit Biscuit", price: "₹40", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Lemon Tea", price: "₹40", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"}], isNew: false, totalTables: 10 },
+            { id: 11, name: "Roastery Coffee House", area: "Banjara Hills", rating: 4.7, reviews: 5000, category: ["Coffee"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcdE2mtVm8YLQ15fhAB0rwfmIrsSS412wF8A&s", description: "Stunning bungalow-turned-cafe known for roasting premium beans in-house.", address: "Road No. 14, Banjara Hills", phone: "+91 40 2354678", timing: "8:00 AM - 11:00 PM", priceRange: "₹1000", specialties: ["Cranberry Coffee", "Mushroom Risotto"], menu: [{item: "Cranberry Cold Brew", price: "₹280", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Mushroom Risotto", price: "₹450", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"},{item: "Cookie Dough Shake", price: "₹260", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Cascara", price: "₹190", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150"},{item: "Zucchini Fries", price: "₹240", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Classic Pour Over", price: "₹210", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Chicken Stroganoff", price: "₹520", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150"},{item: "Fish & Chips", price: "₹550", img: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=150"},{item: "Mocha Bomb", price: "₹240", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Veg Lasagna", price: "₹480", img: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=150"},{item: "Blueberry Cheesecake", price: "₹310", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=150"},{item: "Spanish Latte", price: "₹230", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Pesto Chicken Sandwich", price: "₹420", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Garlic Prawns", price: "₹580", img: "https://images.unsplash.com/photo-1559742811-822873691df8?w=150"},{item: "Cortado", price: "₹180", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"}], isNew: false, totalTables: 20 },
+            { id: 12, name: "Autumn Leaf", area: "Jubilee Hills", rating: 4.6, reviews: 3500, category: ["Coffee"], image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800", description: "A garden cafe sanctuary with vintage decor and a quiet atmosphere.", address: "Road No. 45, Jubilee Hills", phone: "+91 40 2355678", timing: "9:00 AM - 10:30 PM", priceRange: "₹1200", specialties: ["Blueberry Pancakes", "Hummus"], menu: [{item: "Blueberry Pancakes", price: "₹320", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Hummus & Pita", price: "₹280", img: "https://images.unsplash.com/photo-1540713434306-58505cf1b6fc?w=150"},{item: "Iced Latte", price: "₹210", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Egg Benedict", price: "₹450", img: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=150"},{item: "Garden Salad", price: "₹340", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Quinoa Bowl", price: "₹410", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Hot Chocolate", price: "₹220", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Veg Shepherd's Pie", price: "₹390", img: "https://images.unsplash.com/photo-1572449043416-55f4685c9bb7?w=150"},{item: "Roasted Chicken", price: "₹550", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Affogato", price: "₹190", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Lemon Cake", price: "₹210", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Ratatouille", price: "₹420", img: "https://images.unsplash.com/photo-1572449043416-55f4685c9bb7?w=150"},{item: "Chamomile Tea", price: "₹180", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Pulled Chicken Burger", price: "₹380", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Baked Cheesecake", price: "₹290", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=150"}], isNew: false, totalTables: 18 },
+            { id: 13, name: "Theory", area: "Jubilee Hills", rating: 4.4, reviews: 900, category: ["Dessert"], image: "https://b.zmtcdn.com/data/pictures/5/19150885/a393562e71612c275b8c34200a44fce4.jpeg?fit=around|960:500&crop=960:500;*,*", description: "Modern brunch spot with experimental coffee and high-end aesthetics.", address: "Road No. 36, Jubilee Hills", phone: "+91 9122335566", timing: "10:00 AM - 11:00 PM", priceRange: "₹1100", specialties: ["French Toast", "Flat White"], menu: [{item: "Caramel French Toast", price: "₹380", img: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=150"},{item: "Flat White", price: "₹220", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Eggs Benedict", price: "₹410", img: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=150"},{item: "Acai Bowl", price: "₹450", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Cold Brew Tonic", price: "₹240", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Shakshuka", price: "₹380", img: "https://images.unsplash.com/photo-1590412200988-a436970781fa?w=150"},{item: "Truffle Pasta", price: "₹550", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Matcha Latte", price: "₹280", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Chicken Confit", price: "₹590", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Avocado Toast", price: "₹420", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Espresso Martini", price: "₹350", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Mushroom Toast", price: "₹310", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Burrata Salad", price: "₹480", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Passion Fruit Cooler", price: "₹210", img: "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=150"},{item: "Choco Souffle", price: "₹320", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"}], isNew: true, totalTables: 14 },
+            { id: 14, name: "Last House", area: "Jubilee Hills", rating: 4.5, reviews: 1100, category: ["Coffee"], image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800", description: "Minimalist interiors with high-quality specialty coffee and outdoor seating.", address: "Road No. 45, Jubilee Hills", phone: "+91 9944883322", timing: "11:00 AM - 11:00 PM", priceRange: "₹900", specialties: ["Pesto Pizza", "Cold Brew"], menu: [{item: "Pesto Chicken Pizza", price: "₹480", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Sea Salt Cold Brew", price: "₹240", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Garlic Bread", price: "₹180", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=150"},{item: "Spanish Omelette", price: "₹320", img: "https://images.unsplash.com/photo-1510693206972-df098062cb71?w=150"},{item: "V60 Pour Over", price: "₹210", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Margarita Pizza", price: "₹420", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Chicken Popcorn", price: "₹280", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Blueberry Shake", price: "₹250", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Iced Mocha", price: "₹230", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Ham Sandwich", price: "₹360", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Onion Rings", price: "₹190", img: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=150"},{item: "Vanilla Latte", price: "₹210", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Greek Salad", price: "₹310", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Spicy Pasta", price: "₹380", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Double Espresso", price: "₹140", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"}], isNew: false, totalTables: 16 },
+            { id: 15, name: "Third Wave Coffee", area: "Gachibowli", rating: 4.6, reviews: 2000, category: ["Coffee"], image: "https://stores.thirdwavecoffeeroasters.com/360view/Telangana/Sainikpuri/gallery/img_01.jpg", description: "Sleek and professional cafe ideal for the Gachibowli tech crowd.", address: "Lanco Hills Road", phone: "+91 9911991199", timing: "8:00 AM - 12:00 AM", priceRange: "₹800", specialties: ["Sea Salt Mocha", "Bagels"], menu: [{item: "Sesame Bagel", price: "₹240", img: "https://images.unsplash.com/photo-1585476644313-7d4093b822d2?w=150"},{item: "Sea Salt Mocha", price: "₹270", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Avocado Toast", price: "₹350", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Orange Cold Brew", price: "₹240", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Classic Cappuccino", price: "₹190", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Hummus Wrap", price: "₹220", img: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=150"},{item: "Banana Walnut Cake", price: "₹180", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Tandoori Chicken Sandwich", price: "₹290", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Vietnamese Shakerato", price: "₹250", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Blueberry Muffin", price: "₹160", img: "https://images.unsplash.com/photo-1576866209830-589e1bfbaa4d?w=150"},{item: "Hot Chocolate", price: "₹210", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "French Fries", price: "₹150", img: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=150"},{item: "Iced Tea", price: "₹170", img: "https://images.unsplash.com/photo-1560703650-ef3e0f254ae0?w=150"},{item: "Cortado", price: "₹180", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Chocolate Croissant", price: "₹190", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150"}], isNew: false, totalTables: 24 },
+            { id: 16, name: "Beyond Coffee", area: "Jubilee Hills", rating: 4.3, reviews: 1800, category: ["Coffee"], image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800", description: "Art gallery meets cafe, known for its serene setting and robust coffee.", address: "Road No. 36", phone: "+91 40 2354889", timing: "10:00 AM - 10:00 PM", priceRange: "₹900", specialties: ["Chicken Sandwich", "Americano"], menu: [{item: "Club Sandwich", price: "₹320", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150"},{item: "Iced Americano", price: "₹190", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Fries Platter", price: "₹240", img: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=150"},{item: "Garden Pizza", price: "₹410", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Cappuccino", price: "₹180", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Hot Mocha", price: "₹210", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Crispy Corn", price: "₹190", img: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=150"},{item: "Lemon Mint Cooler", price: "₹160", img: "https://images.unsplash.com/photo-1621264968372-43e0c69d6f6a?w=150"},{item: "Veg Burger", price: "₹220", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"},{item: "Cheese Garlic Bread", price: "₹180", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=150"},{item: "Cold Coffee", price: "₹220", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=150"},{item: "Brownie with Ice Cream", price: "₹240", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Chicken Pasta", price: "₹380", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Earl Grey", price: "₹150", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Fish & Chips", price: "₹450", img: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=150"}], isNew: false, totalTables: 15 },
+            { id: 17, name: "Hummingbird", area: "Madhapur", rating: 4.4, reviews: 1300, category: ["Dessert"], image: "https://b.zmtcdn.com/data/pictures/1/18662201/9314f27552dca10cb8c53b2585f59f72.jpg", description: "Charming cafe with floral decor and exceptional artisan desserts.", address: "Kavuri Hills, Madhapur", phone: "+91 9911223388", timing: "11:00 AM - 10:30 PM", priceRange: "₹800", specialties: ["Rainbow Cake", "Mocha"], menu: [{item: "Rainbow Cake Slice", price: "₹280", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Classic Mocha", price: "₹230", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Quiche", price: "₹180", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"},{item: "Red Velvet Cake", price: "₹260", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Nutella Cupcake", price: "₹120", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Rose Tea", price: "₹190", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Blueberry Cheesecake", price: "₹240", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=150"},{item: "Chocolate Ganache", price: "₹290", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Macaron Set (3pc)", price: "₹210", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Chicken Puffs", price: "₹110", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Iced Latte", price: "₹210", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Tiramisu", price: "₹280", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=150"},{item: "Lemon Tart", price: "₹160", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Eclair", price: "₹180", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Veg Sandwich", price: "₹190", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"}], isNew: false, totalTables: 12 },
+            { id: 18, name: "Sublime", area: "Gachibowli", rating: 4.2, reviews: 700, category: ["Coffee"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQba7NDLmK72HJdbj7bqlAtdfL74zYrAZLGOw&s", description: "Cool rooftop vibe near the IT hub, perfect for post-work relaxation.", address: "DLF Road, Gachibowli", phone: "+91 9848011223", timing: "12:00 PM - 12:00 AM", priceRange: "₹700", specialties: ["BBQ Wings", "Iced Tea"], menu: [{item: "BBQ Chicken Wings", price: "₹280", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Peach Iced Tea", price: "₹160", img: "https://images.unsplash.com/photo-1560703650-ef3e0f254ae0?w=150"},{item: "Paneer Tikka Pizza", price: "₹420", img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=150"},{item: "Loaded Nachos", price: "₹260", img: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=150"},{item: "Peri Peri Fries", price: "₹180", img: "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=150"},{item: "Chicken Burger", price: "₹240", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Cold Brew", price: "₹210", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Mojito", price: "₹180", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=150"},{item: "Alfredo Pasta", price: "₹340", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Garlic Bread", price: "₹140", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=150"},{item: "Oreo Shake", price: "₹220", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Hot Chocolate", price: "₹190", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Arrabiata Pasta", price: "₹320", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=150"},{item: "Club Sandwich", price: "₹280", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150"},{item: "Ice Cream Scoop", price: "₹90", img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=150"}], isNew: false, totalTables: 20 },
+            { id: 19, name: "Big Cup Theory", area: "Madhapur", rating: 4.5, reviews: 1500, category: ["Coffee"], image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800", description: "Warm wooden interiors and a dedicated focus on the science of brewing.", address: "Kothaguda, Madhapur", phone: "+91 9911335577", timing: "9:00 AM - 11:00 PM", priceRange: "₹800", specialties: ["Chicken Steak", "Hot Chocolate"], menu: [{item: "Grilled Chicken Steak", price: "₹420", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Special Hot Chocolate", price: "₹210", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Arrabiata Pasta", price: "₹340", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=150"},{item: "Fish Fillet", price: "₹480", img: "https://images.unsplash.com/photo-1524772128034-318e48b83516?w=150"},{item: "Cortado", price: "₹170", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Irish Cold Brew", price: "₹240", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Potato Skins", price: "₹190", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Veggie Burger", price: "₹210", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"},{item: "Cappuccino", price: "₹180", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Lemon Cake", price: "₹180", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Caesar Salad", price: "₹290", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Garlic Mushrooms", price: "₹220", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Hazelnut Latte", price: "₹220", img: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=150"},{item: "Chicken Pasta", price: "₹360", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Mocha Cake", price: "₹210", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"}], isNew: false, totalTables: 18 },
+            { id: 20, name: "True Black", area: "Jubilee Hills", rating: 4.7, reviews: 1000, category: ["Coffee"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9rbW2nKP2CzSOLpcvRna5wmfyO0RL567uKQ&s", description: "Serious about coffee, offering rare single-origin beans and manual brews.", address: "Road No. 45, Jubilee Hills", phone: "+91 9122334400", timing: "7:00 AM - 10:00 PM", priceRange: "₹900", specialties: ["Pour Over", "Banana Bread"], menu: [{item: "V60 Pour Over", price: "₹260", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Banana Walnut Bread", price: "₹180", img: "https://images.unsplash.com/photo-1576866209830-589e1bfbaa4d?w=150"},{item: "Acai Bowl", price: "₹450", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "AeroPress Coffee", price: "₹220", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Sourdough Toast", price: "₹280", img: "https://images.unsplash.com/photo-1525351462161-f408fb19b4f5?w=150"},{item: "Cold Brew Tonic", price: "₹240", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Flat White", price: "₹190", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Japanese Iced Coffee", price: "₹210", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Almond Croissant", price: "₹220", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150"},{item: "Avocado Mash", price: "₹380", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Chia Pudding", price: "₹320", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Granola Bowl", price: "₹350", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Black Coffee", price: "₹160", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150"},{item: "Latte Art Special", price: "₹210", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Greek Yogurt", price: "₹280", img: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=150"}], isNew: false, totalTables: 16 },
+            { id: 21, name: "Nimrah Cafe", area: "Old City", rating: 4.6, reviews: 15000, category: ["Coffee"], image: "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=800", description: "The legendary heart of Hyderabad, famous for Irani Chai next to the Charminar.", address: "Next to Charminar", phone: "N/A", timing: "4:00 AM - 11:00 PM", priceRange: "₹100", specialties: ["Irani Chai", "Osmania Biscuits"], menu: [{item: "Irani Chai", price: "₹25", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Osmania Biscuits (12pc)", price: "₹60", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Bun Maska", price: "₹50", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Fruit Biscuit", price: "₹40", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Tie Biscuit", price: "₹30", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Cream Bun", price: "₹40", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Dilkhush", price: "₹70", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150"},{item: "Jam Roll", price: "₹40", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Samosa", price: "₹20", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Khari Biscuit", price: "₹30", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Salt Biscuit", price: "₹30", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Special Chai", price: "₹35", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Malai Bun", price: "₹80", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Shirmal", price: "₹60", img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=150"},{item: "Chand Biscuit", price: "₹40", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"}], isNew: false, totalTables: 30 },
+            { id: 22, name: "Niloufer Café", area: "Lakdikapul", rating: 4.8, reviews: 25000, category: ["Coffee"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbux_IKi_b92IubOz9oeaXO5HVAMj1VPMLTw&s", description: "Premium tea and bakery experience that has become a city landmark.", address: "Lakdikapul", phone: "+91 40 23232323", timing: "5:00 AM - 12:00 AM", priceRange: "₹300", specialties: ["Premium Tea", "Malai Bun"], menu: [{item: "Premium Milk Tea", price: "₹45", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Maska Bun with Malai", price: "₹110", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Khari", price: "₹30", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Osmania Box (Small)", price: "₹180", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Fruit Cake", price: "₹140", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Plum Cake", price: "₹220", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Ginger Tea", price: "₹50", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Bun Jam", price: "₹60", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Veg Puff", price: "₹40", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Paneer Puff", price: "₹50", img: "https://images.unsplash.com/photo-1583338917451-ace2720d2979?w=150"},{item: "Zafrani Tea", price: "₹60", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Green Tea", price: "₹50", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Coconut Biscuit", price: "₹60", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Milk Rusk", price: "₹50", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Special Coffee", price: "₹80", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150"}], isNew: false, totalTables: 25 },
+            { id: 23, name: "Ketch Up", area: "Kukatpally", rating: 4.1, reviews: 600, category: ["Coffee"], image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/c3/38/d4/ketch-up-restaurant.jpg?w=900&h=500&s=1", description: "Lively hangout spot for college students with affordable snacks.", address: "Kukatpally Phase 3", phone: "+91 9911002233", timing: "11:00 AM - 11:00 PM", priceRange: "₹500", specialties: ["Alfredo Pasta", "Oreo Shake"], menu: [{item: "Alfredo Pasta", price: "₹260", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Oreo Thick Shake", price: "₹180", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Cheese Garlic Bread", price: "₹140", img: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=150"},{item: "Maggi Masala", price: "₹80", img: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=150"},{item: "Chicken Popcorn", price: "₹190", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Cold Coffee", price: "₹140", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=150"},{item: "Veg Sandwich", price: "₹110", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Peri Peri Fries", price: "₹130", img: "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=150"},{item: "KitKat Shake", price: "₹190", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Paneer Burger", price: "₹160", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"},{item: "Corn Salad", price: "₹140", img: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=150"},{item: "Blue Lagoon", price: "₹120", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=150"},{item: "Strawberry Shake", price: "₹160", img: "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=150"},{item: "Chicken Nuggets", price: "₹180", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Aloo Tikki Burger", price: "₹110", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"}], isNew: false, totalTables: 12 },
+            { id: 24, name: "Aaromale", area: "Film Nagar", rating: 4.6, reviews: 1900, category: ["Coffee"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTcjgRsqrCu06M6zEWvcMDRCPgRua7YgmC2g&s", description: "Creative workspace and cafe in a converted old house, very green and artistic.", address: "Film Nagar Road", phone: "+91 9122331122", timing: "10:00 AM - 10:30 PM", priceRange: "₹900", specialties: ["Artisanal Latte", "Salads"], menu: [{item: "Iced Pour Over", price: "₹240", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Garden Fresh Salad", price: "₹320", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Sourdough Sandwich", price: "₹380", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150"},{item: "Matcha Latte", price: "₹280", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Veg Mezze Platter", price: "₹450", img: "https://images.unsplash.com/photo-1540713434306-58505cf1b6fc?w=150"},{item: "Chicken Quiche", price: "₹240", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"},{item: "Kombucha", price: "₹210", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=150"},{item: "Espresso Tonic", price: "₹220", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"},{item: "Beetroot Hummus", price: "₹290", img: "https://images.unsplash.com/photo-1577221084712-45b0445d2b00?w=150"},{item: "Flat White", price: "₹190", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Avocado Toast", price: "₹410", img: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=150"},{item: "Carrot Cake", price: "₹220", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Filter Coffee", price: "₹90", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150"},{item: "Spiced Pumpkin Latte", price: "₹240", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Pasta Pesto", price: "₹360", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"}], isNew: false, totalTables: 14 },
+            { id: 25, name: "Pista House", area: "Kondapur", rating: 4.4, reviews: 4000, category: ["Coffee"], image: "https://content.jdmagicbox.com/v2/comp/hyderabad/z3/040pxx40.xx40.221208162006.k7z3/catalogue/pista-house-chai-sarath-city-capital-mall-kondapur-hyderabad-tea-lounges-c5b51l20ae.jpg", description: "Modern outlet of the famous brand, serving great chai and baked items.", address: "Kondapur Main Road", phone: "+91 40 2356789", timing: "11:00 AM - 11:30 PM", priceRange: "₹600", specialties: ["Zafrani Chai", "Grilled Burger"], menu: [{item: "Zafrani Tea", price: "₹40", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Crispy Grilled Burger", price: "₹240", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Dilkhush", price: "₹80", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150"},{item: "Chicken Biryani (Mini)", price: "₹220", img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=150"},{item: "Veg Manchurian", price: "₹180", img: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=150"},{item: "Haleem (Seasonal)", price: "₹280", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=150"},{item: "Paneer Tikka Roll", price: "₹160", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Chicken 65", price: "₹210", img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=150"},{item: "Apricot Delight", price: "₹150", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=150"},{item: "Gulab Jamun", price: "₹60", img: "https://images.unsplash.com/photo-1589119908995-c6837fa14848?w=150"},{item: "Cold Coffee", price: "₹140", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=150"},{item: "Butter Naan", price: "₹40", img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=150"},{item: "Paneer Butter Masala", price: "₹280", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=150"},{item: "Fruit Biscuit", price: "₹50", img: "https://images.unsplash.com/photo-1558961363-fa99a479d091?w=150"},{item: "Badam Milk", price: "₹90", img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=150"}], isNew: false, totalTables: 20 },
+            { id: 26, name: "Starbucks", area: "Sainikpuri", rating: 4.5, reviews: 500, category: ["Sainikpuri", "Coffee"], image: "https://eu-images.contentstack.com/v3/assets/bltea7aee2fca050a19/bltcc157be03a336644/6724e088ca36fb0e631eeb88/Starbucks-HOTC.jpg", description: "The global coffee giant's beautiful standalone branch in the military neighborhood.", address: "AS Rao Nagar Road", phone: "+91 40 2771234", timing: "8:00 AM - 11:00 PM", priceRange: "₹1000", specialties: ["Java Chip Frappe", "Wraps"], menu: [{item: "Java Chip Frappuccino", price: "₹380", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Paneer Tikka Wrap", price: "₹220", img: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=150"},{item: "Cold Brew with Foam", price: "₹310", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Caramel Macchiato", price: "₹340", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Hazlenut Latte", price: "₹320", img: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=150"},{item: "Choco Chip Cookie", price: "₹180", img: "https://images.unsplash.com/photo-1499636138143-bd649043ea52?w=150"},{item: "Chicken Salad Sandwich", price: "₹290", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Espresso Shot", price: "₹160", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Blueberry Muffin", price: "₹190", img: "https://images.unsplash.com/photo-1576866209830-589e1bfbaa4d?w=150"},{item: "Green Tea Latte", price: "₹280", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "New York Cheesecake", price: "₹350", img: "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=150"},{item: "Mocha Frappuccino", price: "₹360", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Flat White", price: "₹290", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Iced Hibiscus Tea", price: "₹240", img: "https://images.unsplash.com/photo-1560703650-ef3e0f254ae0?w=150"},{item: "Spinach Corn Sandwich", price: "₹210", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"}], isNew: false, totalTables: 22 },
+            { id: 27, name: "C'est La Vie", area: "Jubilee Hills", rating: 4.5, reviews: 1200, category: ["Dessert"], image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/33/80/34/view.jpg?w=900&h=500&s=1", description: "French aesthetics and fine patisserie for a sophisticated brunch.", address: "Road No. 10, Jubilee Hills", phone: "+91 9900223344", timing: "11:00 AM - 11:00 PM", priceRange: "₹1500", specialties: ["Quiche", "Chocolate Eclairs"], menu: [{item: "Mushroom Quiche", price: "₹320", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"},{item: "Belgian Eclair", price: "₹240", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=150"},{item: "Rose Tea", price: "₹210", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Croissant Sandwiches", price: "₹450", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150"},{item: "Fruit Tart", price: "₹220", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Macarons (Box of 5)", price: "₹550", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=150"},{item: "Latte", price: "₹240", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "French Onion Soup", price: "₹380", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=150"},{item: "Duck Confit", price: "₹850", img: "https://images.unsplash.com/photo-1590412200988-a436970781fa?w=150"},{item: "Madeleines", price: "₹180", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Hot Chocolate", price: "₹280", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Ratatouille", price: "₹420", img: "https://images.unsplash.com/photo-1572449043416-55f4685c9bb7?w=150"},{item: "Sea Salt Caramel Cake", price: "₹310", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Crepes", price: "₹350", img: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=150"},{item: "Iced Americano", price: "₹220", img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=150"}], isNew: false, totalTables: 18 },
+            { id: 28, name: "The Joint", area: "Banjara Hills", rating: 4.3, reviews: 2000, category: ["Coffee"], image: "https://b.zmtcdn.com/data/pictures/4/18952144/96e568a46a18bd5841632576c21c0769.jpg?fit=around|960:500&crop=960:500;*,*", description: "Laid-back spot known for its burgers, wings, and robust cold coffee.", address: "Road No. 7, Banjara Hills", phone: "+91 9848011221", timing: "12:00 PM - 11:00 PM", priceRange: "₹800", specialties: ["Double Cheese Burger", "Cold Brew"], menu: [{item: "Double Cheese Burger", price: "₹380", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Truffle Fries", price: "₹210", img: "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=150"},{item: "Vanilla Cold Brew", price: "₹230", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "BBQ Wings", price: "₹280", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=150"},{item: "Classic Hot Dog", price: "₹240", img: "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=150"},{item: "Oreo Shake", price: "₹220", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150"},{item: "Chicken Steak", price: "₹450", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Caesar Salad", price: "₹290", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150"},{item: "Iced Latte", price: "₹210", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150"},{item: "Fish Burger", price: "₹320", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150"},{item: "Nachos with Salsa", price: "₹180", img: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=150"},{item: "Mushroom Pasta", price: "₹340", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "Apple Pie", price: "₹190", img: "https://images.unsplash.com/photo-1561626423-8fa6f7d4e8e6?w=150"},{item: "Cappuccino", price: "₹180", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Veg Club Sandwich", price: "₹260", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150"}], isNew: false, totalTables: 16 },
+            { id: 29, name: "Tuscany", area: "Begumpet", rating: 4.2, reviews: 800, category: ["Secunderabad", "Coffee"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDHPn4mnx_eiXwx3VEP7iVynlefJTuxuN8rw&s", description: "Elegant Italian vibe inside the city, serving authentic pasta and specialty roasts.", address: "Raj Bhavan Road", phone: "+91 40 2345678", timing: "11:00 AM - 11:00 PM", priceRange: "₹2000", specialties: ["Seafood Pasta", "Tiramisu"], menu: [{item: "Prawn Pasta", price: "₹650", img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=150"},{item: "House Tiramisu", price: "₹450", img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=150"},{item: "Affogato", price: "₹280", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Minestrone Soup", price: "₹320", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=150"},{item: "Lasagna Bolognese", price: "₹580", img: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=150"},{item: "Garlic Prawns", price: "₹620", img: "https://images.unsplash.com/photo-1559742811-822873691df8?w=150"},{item: "Mushroom Risotto", price: "₹550", img: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=150"},{item: "Bruschetta", price: "₹280", img: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=150"},{item: "Espresso", price: "₹180", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Caprese Salad", price: "₹450", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Focaccia Bread", price: "₹150", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150"},{item: "Panettone", price: "₹350", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Chianti (Glass)", price: "₹450", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=150"},{item: "Ravioli", price: "₹520", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=150"},{item: "Gelato Selection", price: "₹240", img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=150"}], isNew: false, totalTables: 24 },
+            { id: 30, name: "Espresso It", area: "Sainikpuri", rating: 4.4, reviews: 300, category: ["Sainikpuri", "Coffee"], image: "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800", description: "Small specialty coffee shop with a dedicated fanbase and reading corners.", address: "Defence Colony, Sainikpuri", phone: "+91 9122334499", timing: "10:00 AM - 10:00 PM", priceRange: "₹600", specialties: ["Affogato", "Tuna Melt"], menu: [{item: "Vanilla Affogato", price: "₹220", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Tuna Melt Sandwich", price: "₹280", img: "https://images.unsplash.com/photo-1552058086-5c7c6c61c8c6?w=150"},{item: "Espresso Shot", price: "₹140", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=150"},{item: "Cold Brew Tonic", price: "₹210", img: "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?w=150"},{item: "Cappuccino", price: "₹160", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Banana Walnut Cake", price: "₹150", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150"},{item: "Flat White", price: "₹180", img: "https://images.unsplash.com/photo-1570196917206-6836c7c39224?w=150"},{item: "Veg Burger", price: "₹190", img: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=150"},{item: "Chicken Salad", price: "₹240", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=150"},{item: "Mocha", price: "₹190", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=150"},{item: "Lemon Tea", price: "₹120", img: "https://images.unsplash.com/photo-1561702855-5e5c6e8d2c6b?w=150"},{item: "Chocolate Cookie", price: "₹90", img: "https://images.unsplash.com/photo-1499636138143-bd649043ea52?w=150"},{item: "Sourdough Toast", price: "₹160", img: "https://images.unsplash.com/photo-1525351462161-f408fb19b4f5?w=150"},{item: "Filter Coffee", price: "₹80", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=150"},{item: "Peri Peri Fries", price: "₹140", img: "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=150"}], isNew: false, totalTables: 12 }
+        ];
+
+        // --- STATE ---
+        let favorites = JSON.parse(localStorage.getItem('cafeFavorites')) || [];
+        let visitedCafes = JSON.parse(localStorage.getItem('visitedCafes')) || [];
+        let comparisonList = JSON.parse(localStorage.getItem('comparisonList')) || [];
+        let cafeBookings = JSON.parse(localStorage.getItem('cafeBookings')) || [];
+        let priceFilter = 2000;
+        let currentModalCafe = null;
+        const ADMIN_PASSWORD = "admin123";
+
+        // Helper: get booked count for a cafe
+        function getBookedCount(cafeId) {
+            return cafeBookings.filter(b => b.cafeId === cafeId).length;
+        }
+
+        // Helper: get badge colour class based on availability
+        function getBadgeClass(cafe) {
+            const booked = getBookedCount(cafe.id);
+            const total = cafe.totalTables || 10;
+            const available = total - booked;
+            if (available <= 0) return 'badge-red';
+            if (available <= 5) return 'badge-yellow';
+            return 'badge-green';
+        }
+
+        // --- RENDER FUNCTION (compact badge in header) ---
+        function render(data) {
+            const grid = document.getElementById('cafesGrid');
+            const favIds = new Set(favorites);
+            const visitedIds = new Set(visitedCafes);
+            const compareIds = new Set(comparisonList);
+            
+            grid.innerHTML = data.map(cafe => {
+                const cafePrice = parseInt(cafe.priceRange.replace('₹', '').replace(',', ''));
+                if (cafePrice > priceFilter) return '';
+                const booked = getBookedCount(cafe.id);
+                const total = cafe.totalTables || 10;
+                const badgeClass = getBadgeClass(cafe);
+                
+                return `
+                    <div class="cafe-card ${cafe.isNew ? 'new-cafe' : ''}" 
+                         role="button" tabindex="0" 
+                         onclick="openModal(${cafe.id})">
+                        
+                        ${visitedIds.has(cafe.id) ? '<span class="visited-badge"><i class="bi bi-check-circle"></i> Visited</span>' : ''}
+                        
+                        <button onclick="toggleFavorite(event, ${cafe.id})" class="fav-btn ${favIds.has(cafe.id) ? 'active' : ''}">
+                            <i class="bi bi-heart${favIds.has(cafe.id) ? '-fill' : ''}"></i>
+                        </button>
+                        
+                        <button onclick="toggleComparison(event, ${cafe.id})" class="compare-btn ${compareIds.has(cafe.id) ? 'active' : ''}">
+                            <i class="bi bi-plus-circle${compareIds.has(cafe.id) ? '-fill' : ''}"></i>
+                        </button>
+                        
+                        <img src="${cafe.image}" class="card-img" alt="${cafe.name}" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800'">
+                        
+                        <div class="card-body">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    ${cafe.name}
+                                    <span class="compact-table-badge ${badgeClass}">
+                                        <i class="bi bi-table"></i> ${booked}/${total}
+                                    </span>
+                                </h3>
+                                <span class="card-price">${cafe.priceRange}</span>
+                            </div>
+                            <p class="card-area"><i class="bi bi-geo-alt"></i> ${cafe.area}</p>
+                            <div class="card-info-row">
+                                <i class="bi bi-clock"></i><span>${cafe.timing}</span>
+                            </div>
+                            <p class="card-desc">"${cafe.description}"</p>
+                            <div class="card-footer">
+                                <span class="rating"><i class="bi bi-star-fill"></i> ${cafe.rating}</span>
+                                <span class="view-btn">Details →</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            updateCount();
+        }
+
+        // --- CATEGORIZE MENU ---
+        function categorizeMenu(menu) {
+            const categories = {
+                'Coffee & Beverages': [],
+                'Breakfast & Brunch': [],
+                'Main Course': [],
+                'Pasta & Pizza': [],
+                'Burgers & Sandwiches': [],
+                'Appetizers & Sides': [],
+                'Desserts & Bakery': [],
+                'Indian Specialties': []
+            };
+            if (!menu) return categories;
+            menu.forEach(item => {
+                const lowerItem = item.item.toLowerCase();
+                if (lowerItem.includes('coffee') || lowerItem.includes('tea') || lowerItem.includes('latte') || lowerItem.includes('cappuccino') || lowerItem.includes('espresso') || lowerItem.includes('shake') || lowerItem.includes('mocha') || lowerItem.includes('brew') || lowerItem.includes('juice') || lowerItem.includes('soda') || lowerItem.includes('lemonade') || lowerItem.includes('chai')) {
+                    categories['Coffee & Beverages'].push(item);
+                } else if (lowerItem.includes('breakfast') || lowerItem.includes('pancake') || lowerItem.includes('waffle') || lowerItem.includes('omelette') || lowerItem.includes('toast') || lowerItem.includes('bagel') || lowerItem.includes('croissant') || lowerItem.includes('egg')) {
+                    categories['Breakfast & Brunch'].push(item);
+                } else if (lowerItem.includes('steak') || lowerItem.includes('chicken') || lowerItem.includes('fish') || lowerItem.includes('salad') || lowerItem.includes('rice') || lowerItem.includes('bowl') || lowerItem.includes('quiche') || lowerItem.includes('risotto')) {
+                    categories['Main Course'].push(item);
+                } else if (lowerItem.includes('pasta') || lowerItem.includes('pizza') || lowerItem.includes('lasagna') || lowerItem.includes('spaghetti')) {
+                    categories['Pasta & Pizza'].push(item);
+                } else if (lowerItem.includes('burger') || lowerItem.includes('sandwich') || lowerItem.includes('wrap') || lowerItem.includes('roll')) {
+                    categories['Burgers & Sandwiches'].push(item);
+                } else if (lowerItem.includes('fries') || lowerItem.includes('nachos') || lowerItem.includes('wings') || lowerItem.includes('popcorn') || lowerItem.includes('garlic bread') || lowerItem.includes('soup')) {
+                    categories['Appetizers & Sides'].push(item);
+                } else if (lowerItem.includes('cake') || lowerItem.includes('cheesecake') || lowerItem.includes('brownie') || lowerItem.includes('tiramisu') || lowerItem.includes('macaron') || lowerItem.includes('tart') || lowerItem.includes('muffin') || lowerItem.includes('cookie') || lowerItem.includes('dessert') || lowerItem.includes('ice cream')) {
+                    categories['Desserts & Bakery'].push(item);
+                } else {
+                    categories['Main Course'].push(item);
+                }
+            });
+            Object.keys(categories).forEach(key => { if (categories[key].length === 0) delete categories[key]; });
+            return categories;
+        }
+
+        // --- OPEN MODAL (with detailed table stats) ---
+        window.openModal = function(id) {
+            const cafe = cafesData.find(c => c.id === id);
+            if (!cafe) return;
+            currentModalCafe = cafe;
+            const visited = visitedCafes.includes(id);
+            const today = new Date().toISOString().split('T')[0];
+            const categorizedMenu = categorizeMenu(cafe.menu || []);
+            const booked = getBookedCount(cafe.id);
+            const total = cafe.totalTables || 10;
+            const available = total - booked;
+            const percent = total > 0 ? (booked / total) * 100 : 0;
+            
+            document.getElementById('modalContent').innerHTML = `
+                <div class="modal-img-side"><img src="${cafe.image}" alt="${cafe.name}" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800'"></div>
+                <div class="modal-info-side">
+                    <span class="modal-tag">✨ Featured Cafe</span>
+                    <h2 class="modal-title">${cafe.name}</h2>
+                    <div class="modal-meta">
+                        <span style="color:#facc15;"><i class="bi bi-star-fill"></i> ${cafe.rating}</span>
+                        <span style="color:#4ade80;">${cafe.priceRange}</span>
+                        <span style="opacity:0.7;">📍 ${cafe.area}</span>
+                    </div>
+                    <p class="modal-desc">"${cafe.description}"</p>
+                    <div class="modal-details-list">
+                        <div class="detail-item"><i class="bi bi-geo-alt"></i><div><strong>Address</strong><br><span style="opacity:0.8;">${cafe.address}</span></div></div>
+                        <div class="detail-item"><i class="bi bi-stars"></i><div><strong>Specialties</strong><div class="specialty-tags">${cafe.specialties.map(s => `<span class="s-tag">${s}</span>`).join('')}</div></div></div>
+                        
+                        <!-- Detailed Table Availability -->
+                        <div class="table-availability-modal">
+                            <div class="table-stats">
+                                <div class="stat-item"><span class="stat-value">${total}</span><div class="stat-label">Total Tables</div></div>
+                                <div class="stat-item"><span class="stat-value" style="color:#4ade80;">${booked}</span><div class="stat-label">Booked</div></div>
+                                <div class="stat-item"><span class="stat-value" style="color:${available > 0 ? '#facc15' : '#f87171'};">${available}</span><div class="stat-label">Available</div></div>
+                            </div>
+                            <div class="progress-bar-modal">
+                                <div class="progress-fill-modal" style="width: ${percent}%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size:0.8rem; margin-top:5px;">
+                                <span>${percent.toFixed(0)}% occupied</span>
+                                <span>${available > 0 ? (available <= 5 ? '🔥 Few left' : '✅ Available') : '❌ Fully booked'}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- MENU SECTION -->
+                        <div class="detail-item" style="flex-direction: column; gap: 5px;">
+                            <button onclick="toggleMenu()" class="btn btn-outline" style="width: 100%; border-color: var(--pink); color: var(--pink); font-size: 0.8rem;">
+                                <i class="bi bi-book"></i> VIEW FULL MENU
+                            </button>
+                            <div id="menuContainer" class="menu-list-container">
+                                ${Object.keys(categorizedMenu).map(category => `
+                                    <div class="menu-category">${category}</div>
+                                    ${categorizedMenu[category].map(m => `
+                                        <div class="menu-item">
+                                            <img src="${m.img}" class="menu-item-img" alt="${m.item}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150'">
+                                            <div class="menu-item-details">
+                                                <span class="menu-item-name">${m.item}</span>
+                                                <span class="menu-item-price">${m.price}</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Reviews Section -->
+                        <div class="reviews-section">
+                            <h4><i class="bi bi-chat-left-text"></i> Recent Reviews</h4>
+                            <div class="review"><div class="review-header"><span class="reviewer">Foodie123</span><span class="review-rating">★★★★★</span></div><p class="review-text">"Amazing coffee and perfect ambiance!"</p></div>
+                            <div class="review"><div class="review-header"><span class="reviewer">CoffeeLover</span><span class="review-rating">★★★★☆</span></div><p class="review-text">"Love the vintage decor and music"</p></div>
+                        </div>
+                    </div>
+                    
+                    <!-- BOOK A TABLE BUTTON -->
+                    <button onclick="toggleBookingPanel()" class="btn-booking ${available <= 0 ? 'disabled' : ''}" ${available <= 0 ? 'disabled' : ''}>
+                        <i class="bi bi-calendar-check-fill"></i> ${available > 0 ? 'Book a Table' : 'Fully Booked'}
+                    </button>
+                    
+                    <!-- BOOKING PANEL -->
+                    <div id="bookingPanel" class="booking-panel">
+                        <div class="booking-row">
+                            <div class="booking-field"><label><i class="bi bi-person"></i> YOUR NAME</label><input type="text" id="bookingCustomerName" placeholder="e.g. John Doe" required></div>
+                            <div class="booking-field"><label><i class="bi bi-envelope"></i> EMAIL</label><input type="email" id="bookingCustomerEmail" placeholder="john@example.com" required></div>
+                        </div>
+                        <div class="booking-row">
+                            <div class="booking-field"><label><i class="bi bi-telephone"></i> PHONE</label><input type="tel" id="bookingCustomerPhone" placeholder="+91 98765 43210" required></div>
+                        </div>
+                        <div class="booking-row">
+                            <div class="booking-field"><label><i class="bi bi-calendar3"></i> DATE</label><input type="date" id="bookingDate" value="${today}" min="${today}"></div>
+                            <div class="booking-field"><label><i class="bi bi-clock"></i> TIME</label>
+                                <select id="bookingTime">
+                                    <option value="12:00 PM">12:00 PM</option><option value="1:00 PM">1:00 PM</option><option value="2:00 PM">2:00 PM</option>
+                                    <option value="3:00 PM">3:00 PM</option><option value="4:00 PM">4:00 PM</option><option value="5:00 PM">5:00 PM</option>
+                                    <option value="6:00 PM">6:00 PM</option><option value="7:00 PM" selected>7:00 PM</option><option value="8:00 PM">8:00 PM</option>
+                                    <option value="9:00 PM">9:00 PM</option>
+                                </select>
+                            </div>
+                            <div class="booking-field"><label><i class="bi bi-people"></i> GUESTS</label>
+                                <select id="bookingGuests">
+                                    <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="confirmBooking()" class="btn-book-confirm"><i class="bi bi-check2-circle"></i> Confirm Booking</button>
+                    </div>
+
+                    <!-- Modal Actions -->
+                    <div class="modal-actions">
+                        <a href="http://maps.google.com/?q=${encodeURIComponent(cafe.name + ' ' + cafe.area)}" target="_blank" class="btn btn-pink"><i class="bi bi-map"></i> Directions</a>
+                        <a href="tel:${cafe.phone}" class="btn btn-outline"><i class="bi bi-telephone"></i> Call</a>
+                        <button onclick="markVisited(${cafe.id})" class="btn btn-visited ${visited ? 'visited' : ''}"><i class="bi bi-${visited ? 'check-circle-fill' : 'circle'}"></i> ${visited ? 'Visited' : 'Mark Visited'}</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('cafeModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        // --- MENU TOGGLE ---
+        window.toggleMenu = function() {
+            const menu = document.getElementById('menuContainer');
+            if (menu) menu.style.display = (menu.style.display === "none" || !menu.style.display) ? "block" : "none";
+        };
+
+        // --- BOOKING FUNCTIONS ---
+        window.toggleBookingPanel = function() {
+            const panel = document.getElementById('bookingPanel');
+            if (panel) panel.classList.toggle('active');
+        };
+
+        window.confirmBooking = function() {
+            const nameInput = document.getElementById('bookingCustomerName');
+            const emailInput = document.getElementById('bookingCustomerEmail');
+            const phoneInput = document.getElementById('bookingCustomerPhone');
+            const dateInput = document.getElementById('bookingDate');
+            const timeSelect = document.getElementById('bookingTime');
+            const guestsSelect = document.getElementById('bookingGuests');
+            
+            if (!nameInput || !nameInput.value.trim()) { alert('Please enter your name.'); return; }
+            if (!emailInput || !emailInput.value.trim() || !emailInput.value.includes('@')) { alert('Please enter a valid email.'); return; }
+            if (!phoneInput || !phoneInput.value.trim()) { alert('Please enter your phone number.'); return; }
+
+            const customerName = nameInput.value.trim();
+            const customerEmail = emailInput.value.trim();
+            const customerPhone = phoneInput.value.trim();
+            
+            let formattedDate = 'Today';
+            if (dateInput && dateInput.value) {
+                const dateObj = new Date(dateInput.value + 'T12:00:00');
+                formattedDate = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+            
+            const timeValue = timeSelect ? timeSelect.value : '7:00 PM';
+            const guestsValue = guestsSelect ? guestsSelect.value : '2';
+            const cafeName = currentModalCafe ? currentModalCafe.name : 'Cafe';
+            const cafeId = currentModalCafe ? currentModalCafe.id : null;
+            
+            const newBooking = {
+                id: Date.now() + Math.random(),
+                cafeId: cafeId,
+                cafeName: cafeName,
+                customerName: customerName,
+                customerEmail: customerEmail,
+                customerPhone: customerPhone,
+                date: dateInput ? dateInput.value : new Date().toISOString().split('T')[0],
+                time: timeValue,
+                guests: guestsValue,
+                bookedAt: new Date().toISOString()
+            };
+            cafeBookings.push(newBooking);
+            localStorage.setItem('cafeBookings', JSON.stringify(cafeBookings));
+            
+            emailjs.send("service_su0dcnl","template_3ocleaj",{
+cafe_name: cafeName,
+customer_name: customerName,
+customer_email: customerEmail,
+phone: customerPhone,
+date: dateInput ? dateInput.value : new Date().toISOString().split('T')[0],
+time: timeValue,
+guests: guestsValue
+}).then(function(){
+showNotification(`📧 Confirmation email sent to ${customerEmail}`, 'success');
+}, function(error){
+showNotification("❌ Email failed to send", "error");
+});
+            
+            document.getElementById('confirmCafeName').innerText = cafeName;
+            document.getElementById('confirmCustomerName').innerText = customerName;
+            document.getElementById('confirmCustomerEmail').innerText = customerEmail;
+            document.getElementById('confirmCustomerPhone').innerText = customerPhone;
+            document.getElementById('confirmDate').innerText = formattedDate;
+            document.getElementById('confirmTime').innerText = timeValue;
+            document.getElementById('confirmGuestCount').innerText = `${guestsValue} ${guestsValue === '1' ? 'person' : 'people'}`;
+            
+            const panel = document.getElementById('bookingPanel');
+            if (panel) panel.classList.remove('active');
+            document.getElementById('bookingConfirmationModal').classList.add('show');
+            
+            // Re-render to update counts
+            applyFilters(document.querySelector('.filter-chip.active').dataset.filter);
+        };
+
+        window.closeBookingConfirmation = function() {
+            document.getElementById('bookingConfirmationModal').classList.remove('show');
+        };
+
+        // --- ADMIN FUNCTIONS ---
+        function renderAdminBookings() {
+            const tbody = document.getElementById('bookingTableBody');
+            const noBookingsMsg = document.getElementById('noBookingsMsg');
+            if (!tbody) return;
+            cafeBookings = JSON.parse(localStorage.getItem('cafeBookings')) || [];
+            if (cafeBookings.length === 0) {
+                tbody.innerHTML = '';
+                noBookingsMsg.style.display = 'block';
+                return;
+            }
+            noBookingsMsg.style.display = 'none';
+            tbody.innerHTML = cafeBookings.sort((a,b) => new Date(b.bookedAt) - new Date(a.bookedAt)).map(b => {
+                const dateObj = new Date(b.date + 'T12:00:00');
+                const displayDate = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                const bookedTime = new Date(b.bookedAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+                return `<tr><td><strong>${b.cafeName}</strong></td><td>${b.customerName}</td><td>${b.customerPhone}</td><td>${b.customerEmail || 'N/A'}</td><td>${displayDate}</td><td>${b.time}</td><td>${b.guests}</td><td style="opacity:0.7; font-size:0.8rem;">${bookedTime}</td></tr>`;
+            }).join('');
+        }
+
+        window.clearAllBookings = function() {
+            if (confirm('Delete all table bookings? This cannot be undone.')) {
+                cafeBookings = [];
+                localStorage.setItem('cafeBookings', JSON.stringify(cafeBookings));
+                renderAdminBookings();
+                applyFilters(document.querySelector('.filter-chip.active').dataset.filter);
+            }
+        };
+
+        // --- LOCK/UNLOCK ADMIN ---
+        function showAdminLock() {
+            document.getElementById('adminLockOverlay').classList.add('active');
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('lockErrorMessage').classList.remove('show');
+        }
+        function hideAdminLock() {
+            document.getElementById('adminLockOverlay').classList.remove('active');
+        }
+        function unlockAdmin() {
+            const enteredPassword = document.getElementById('adminPasswordInput').value;
+            if (enteredPassword === ADMIN_PASSWORD) {
+                hideAdminLock();
+                renderAdminBookings();
+                document.getElementById('cafeSection').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                closeModal();
+            } else {
+                document.getElementById('lockErrorMessage').classList.add('show');
+            }
+        }
+        function showCafeSection() {
+            document.getElementById('cafeSection').style.display = 'block';
+            document.getElementById('adminSection').style.display = 'none';
+            hideAdminLock();
+        }
+
+        // --- FAVORITES ---
+        window.toggleFavorite = function(e, id) {
+            e.stopPropagation();
+            const idx = favorites.indexOf(id);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('cafeFavorites', JSON.stringify(favorites));
+            const btn = e.currentTarget;
+            if (favorites.includes(id)) {
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="bi bi-heart"></i>';
+            }
+            updateCount();
+        };
+
+        // --- MARK VISITED ---
+        window.markVisited = function(id) {
+            if (!visitedCafes.includes(id)) {
+                visitedCafes.push(id);
+                showNotification('Marked as visited!');
+            } else {
+                visitedCafes = visitedCafes.filter(cid => cid !== id);
+                showNotification('Removed from visited');
+            }
+            localStorage.setItem('visitedCafes', JSON.stringify(visitedCafes));
+            const btn = document.querySelector(`.btn-visited`);
+            if (btn) {
+                if (visitedCafes.includes(id)) {
+                    btn.classList.add('visited');
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Visited';
+                } else {
+                    btn.classList.remove('visited');
+                    btn.innerHTML = '<i class="bi bi-circle"></i> Mark Visited';
+                }
+            }
+        };
+
+        // --- UPDATE COUNT ---
+        function updateCount() {
+            document.getElementById('favoritesCount').innerHTML = `${favorites.length} <i class="bi bi-heart-fill" style="color: var(--pink);"></i>`;
+            document.getElementById('compareNow').innerHTML = `Compare (${comparisonList.length})`;
+        }
+
+        // --- NOTIFICATION ---
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(34, 197, 94, 0.9)'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                font-size: 0.9rem;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // --- APPLY FILTERS ---
+        window.applyFilters = function(filterType) {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            let data = cafesData.filter(c => 
+                c.name.toLowerCase().includes(q) || 
+                c.area.toLowerCase().includes(q) ||
+                c.category.some(cat => cat.toLowerCase().includes(q))
+            );
+            
+            if (filterType === 'favorites') {
+                data = data.filter(c => favorites.includes(c.id));
+            } else if (filterType === 'mostBooked') {
+                data = [...data].sort((a, b) => getBookedCount(b.id) - getBookedCount(a.id));
+            } else if (filterType !== 'all') {
+                data = data.filter(c => c.category.includes(filterType) || c.area === filterType);
+            }
+            
+            render(data);
+        };
+
+        // --- UPDATE SUGGESTIONS ---
+        function updateSuggestions() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const suggestions = document.getElementById('suggestions');
+            
+            if (input.length < 2) {
+                suggestions.style.display = 'none';
+                return;
+            }
+            
+            const matches = [];
+            cafesData.forEach(cafe => {
+                if (cafe.name.toLowerCase().includes(input) || cafe.area.toLowerCase().includes(input)) {
+                    matches.push(cafe);
+                }
+            });
+            
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.slice(0, 5).map(cafe => 
+                    `<div class="suggestion-item" onclick="document.getElementById('searchInput').value='${cafe.name}'; applyFilters('all'); suggestions.style.display='none';">${cafe.name} (${cafe.area})</div>`
+                ).join('');
+                suggestions.style.display = 'block';
+            } else {
+                suggestions.style.display = 'none';
+            }
+        }
+
+        // --- PRICE FILTER ---
+        function updatePriceFilter(value) {
+            priceFilter = parseInt(value);
+            document.getElementById('priceValue').innerHTML = `₹0 - ₹${value}`;
+            applyFilters(document.querySelector('.filter-chip.active').dataset.filter);
+        }
+
+        // --- CLOSE MODAL ---
+        window.closeModal = function() {
+            document.getElementById('cafeModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        // --- INIT BACKGROUND ---
+        function initBackground() {
+            const container = document.getElementById('canvas-bg');
+            if (container.children.length === 0) {
+                const colors = ['#ec4899', '#6366f1', '#a855f7'];
+                for (let i = 0; i < 8; i++) {
+                    const blob = document.createElement('div');
+                    blob.className = 'bg-blob';
+                    const size = Math.random() * 300 + 200;
+                    blob.style.width = `${size}px`;
+                    blob.style.height = `${size}px`;
+                    blob.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    blob.style.left = `${Math.random() * 100}%`;
+                    blob.style.top = `${Math.random() * 100}%`;
+                    blob.style.animationDelay = `${Math.random() * 5}s`;
+                    container.appendChild(blob);
+                }
+            }
+        }
+
+        // --- SHARE CAFE ---
+        window.shareCafe = function() {
+            if (!currentModalCafe) {
+                showNotification('No cafe selected', 'error');
+                return;
+            }
+            const cafe = currentModalCafe;
+            if (navigator.share) {
+                navigator.share({
+                    title: `${cafe.name} - Hyderabad Cafe Guide`,
+                    text: `Check out ${cafe.name} in ${cafe.area}`,
+                    url: window.location.href
+                }).catch(() => fallbackShare(cafe));
+            } else {
+                fallbackShare(cafe);
+            }
+        };
+        function fallbackShare(cafe) {
+            const message = `🍽️ *${cafe.name}* - Hyderabad Cafe Guide\n📍 Area: ${cafe.area}\n⭐ Rating: ${cafe.rating}★\n📞 ${cafe.phone}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // --- COMPARISON FUNCTIONS ---
+        window.toggleComparison = function(e, id) {
+            e.stopPropagation();
+            const idx = comparisonList.indexOf(id);
+            if (idx > -1) {
+                comparisonList.splice(idx, 1);
+                showNotification('Removed from comparison', 'success');
+            } else if (comparisonList.length < 3) {
+                comparisonList.push(id);
+                showNotification(`Added to comparison (${comparisonList.length}/3)`, 'success');
+            } else {
+                showNotification('Maximum 3 cafes for comparison', 'error');
+                return;
+            }
+            localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+            updateComparisonBar();
+            document.querySelectorAll(`.compare-btn`).forEach(btn => {
+                const match = btn.getAttribute('onclick')?.match(/\d+/);
+                if (match) {
+                    const btnId = parseInt(match[0]);
+                    if (btnId === id) {
+                        if (comparisonList.includes(id)) {
+                            btn.classList.add('active');
+                            btn.innerHTML = '<i class="bi bi-plus-circle-fill"></i>';
+                        } else {
+                            btn.classList.remove('active');
+                            btn.innerHTML = '<i class="bi bi-plus-circle"></i>';
+                        }
+                    }
+                }
+            });
+        };
+
+        window.removeFromComparison = function(id) {
+            comparisonList = comparisonList.filter(cid => cid !== id);
+            localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+            updateComparisonBar();
+            document.querySelectorAll(`.compare-btn`).forEach(btn => {
+                const match = btn.getAttribute('onclick')?.match(/\d+/);
+                if (match) {
+                    const btnId = parseInt(match[0]);
+                    if (btnId === id) {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '<i class="bi bi-plus-circle"></i>';
+                    }
+                }
+            });
+            showNotification('Removed from comparison', 'success');
+        };
+
+        window.clearComparison = function() {
+            comparisonList = [];
+            localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+            document.querySelectorAll(`.compare-btn`).forEach(btn => {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="bi bi-plus-circle"></i>';
+            });
+            updateComparisonBar();
+            showNotification('Comparison cleared', 'success');
+        };
+
+        window.compareNow = function() {
+            if (comparisonList.length < 2) {
+                showNotification('Select at least 2 cafes to compare', 'error');
+                return;
+            }
+            const cafes = comparisonList.map(id => cafesData.find(c => c.id === id));
+            const comparisonText = cafes.map(c => 
+                `• ${c.name} (${c.rating}★) - ${c.priceRange} - ${c.area}`
+            ).join('\n');
+            alert(`Comparing ${cafes.length} cafes:\n\n${comparisonText}`);
+        };
+
+        function updateComparisonBar() {
+            const bar = document.getElementById('comparisonBar');
+            const items = document.getElementById('compareItems');
+            const compareBtn = document.getElementById('compareNow');
+            
+            if (comparisonList.length > 0) {
+                bar.classList.remove('hidden');
+                items.innerHTML = comparisonList.map(id => {
+                    const cafe = cafesData.find(c => c.id === id);
+                    return `<div class="compare-item">${cafe.name} <button onclick="removeFromComparison(${id})">×</button></div>`;
+                }).join('');
+                compareBtn.innerHTML = `Compare (${comparisonList.length})`;
+            } else {
+                bar.classList.add('hidden');
+                compareBtn.innerHTML = 'Compare (0)';
+            }
+            updateCount();
+        }
+
+        // --- INTRO AUTO-REMOVAL (after 3 seconds) ---
+        setTimeout(() => {
+            const overlay = document.getElementById('introOverlay');
+            if (overlay) overlay.remove();
+        }, 3000);
+
+        // Carousel rotation
+        const slides = document.querySelectorAll('.intro-slide');
+        let current = 0;
+        const interval = setInterval(() => {
+            if (!document.getElementById('introOverlay')) {
+                clearInterval(interval);
+                return;
+            }
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 2000);
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initBackground();
+            render(cafesData);
+            
+            document.getElementById('searchInput').addEventListener('input', () => {
+                applyFilters(document.querySelector('.filter-chip.active').dataset.filter);
+                updateSuggestions();
+            });
+            
+            document.querySelectorAll('.filter-chip').forEach(c => c.addEventListener('click', e => {
+                document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                e.target.classList.add('active');
+                applyFilters(e.target.dataset.filter);
+            }));
+            
+            document.getElementById('priceSlider').addEventListener('input', (e) => updatePriceFilter(e.target.value));
+            
+            document.getElementById('clearCompare').addEventListener('click', window.clearComparison);
+            document.getElementById('compareNow').addEventListener('click', window.compareNow);
+            
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('cafeModal')) closeModal();
+                const suggestions = document.getElementById('suggestions');
+                if (!event.target.closest('.search-container')) {
+                    suggestions.style.display = 'none';
+                }
+            };
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('cafeModal').classList.contains('active')) closeModal();
+                if (e.key === '/' && !e.target.matches('input, textarea')) { 
+                    e.preventDefault(); 
+                    document.getElementById('searchInput').focus(); 
+                }
+            });
+            
+            document.getElementById('adminLink').addEventListener('click', function(e) { e.preventDefault(); showAdminLock(); });
+            document.getElementById('unlockAdminBtn').addEventListener('click', unlockAdmin);
+            document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') unlockAdmin(); });
+            document.getElementById('backToCafesLink').addEventListener('click', function(e) { e.preventDefault(); showCafeSection(); });
+            document.getElementById('clearAllBookingsBtn').addEventListener('click', clearAllBookings);
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+            `;
+            document.head.appendChild(style);
+            
+            showCafeSection();
+            updateComparisonBar();
+        });
+    </script>
+</body>
+</html>
